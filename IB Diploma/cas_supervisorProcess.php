@@ -32,7 +32,7 @@ try {
     echo $e->getMessage();
 }
 
-$key = $_POST['key'];
+$key = $_POST['key'] ?? '';
 $URL = '../../index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_supervisor.php&key=$key";
 
 try {
@@ -73,8 +73,8 @@ if ($resultKey->rowCount() < 1) {
         header("Location: {$URL}");
     } else {
         //Get variables
-        $attendance = $_POST['attendance'];
-        $evaluation = $_POST['evaluation'];
+        $attendance = $_POST['attendance'] ?? '';
+        $evaluation = $_POST['evaluation'] ?? '';
         if ($attendance == '' or $evaluation == '') {
             //Fail1
             $URL = $URL.'&return=error1';

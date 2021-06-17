@@ -22,7 +22,7 @@ use Gibbon\Forms\Prefab\DeleteForm;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_delete.php') == false) {
 
@@ -56,7 +56,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_de
             //Let's go!
             $values = $result->fetch();
             
-            $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/staff_manage_deleteProcess.php?ibDiplomaCASStaffID=$ibDiplomaCASStaffID?");
+            $form = DeleteForm::createForm($session->get('absoluteURL').'/modules/'.$session->get('module')."/staff_manage_deleteProcess.php?ibDiplomaCASStaffID=$ibDiplomaCASStaffID?");
             echo $form->getOutput();
 
         }

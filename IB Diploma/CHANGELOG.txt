@@ -1,5 +1,12 @@
 CHANGELOG
 =========
+v1.2.00
+-------
+Changed Roll Groups to Form Groups
+Refactored session variables
+Added null coalesce
+Requires v22.0.0
+
 v1.1.03
 -------
 Update manifest tables to use InnoDB storage engine

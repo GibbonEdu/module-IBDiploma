@@ -20,13 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_reflections.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -38,7 +38,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
         }
 
         try {
-            $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+            $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sql = 'SELECT * FROM ibDiplomaCASReflection WHERE gibbonPersonID=:gibbonPersonID ORDER BY timestamp';
             $result = $connection2->prepare($sql);
             $result->execute($data);
@@ -47,7 +47,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
         }
 
         echo "<div class='linkTop'>";
-        echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/cas_student_reflections_add.php'><img title='New' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
+        echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/cas_student_reflections_add.php'><img title='New' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
         echo '</div>';
         echo "<div class='linkTop'>";
         echo 'Filter Commitment: ';
@@ -57,7 +57,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
             <option selected value='General'>General CAS</option>
             <?php
             try {
-                $dataSelect = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+                $dataSelect = array('gibbonPersonID' => $session->get('gibbonPersonID'));
                 $sqlSelect = 'SELECT DISTINCT ibDiplomaCASCommitment.ibDiplomaCASCommitmentID, name FROM ibDiplomaCASReflection JOIN ibDiplomaCASCommitment ON (ibDiplomaCASCommitment.ibDiplomaCASCommitmentID=ibDiplomaCASReflection.ibDiplomaCASCommitmentID) WHERE ibDiplomaCASReflection.gibbonPersonID=:gibbonPersonID ORDER BY timestamp';
                 $resultSelect = $connection2->prepare($sqlSelect);
                 $resultSelect->execute($dataSelect);
@@ -125,7 +125,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                 echo $row['title'];
                 echo '</td>';
                 echo '<td>';
-                echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_reflections_delete.php&ibDiplomaCASReflectionID='.$row['ibDiplomaCASReflectionID']."'><img title='Delete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a> ";
+                echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/cas_student_reflections_delete.php&ibDiplomaCASReflectionID='.$row['ibDiplomaCASReflectionID']."'><img title='Delete' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a> ";
                 echo "<script type='text/javascript'>";
                 echo '$(document).ready(function(){';
                 echo "\$(\".comment-$count\").hide();";
@@ -135,7 +135,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                 echo '});';
                 echo '});';
                 echo '</script>';
-                echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$_SESSION[$guid]['absoluteURL']."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
+                echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$session->get('absoluteURL')."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
                 echo '</td>';
                 echo '</tr>';
                 echo "<tr class='comment-$count' id='comment-$count'>";

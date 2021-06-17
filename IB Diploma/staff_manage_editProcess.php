@@ -32,10 +32,10 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
 $ibDiplomaCASStaffID = $_GET['ibDiplomaCASStaffID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/staff_manage.php";
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/staff_manage.php";
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_edit.php') == false) {
 
@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ed
         header("Location: {$URL}");
     } else {
         try {
-        
+
             $data = array('ibDiplomaCASStaffID' => $ibDiplomaCASStaffID);
             $sql = 'SELECT * FROM ibDiplomaCASStaff WHERE ibDiplomaCASStaffID=:ibDiplomaCASStaffID';
             $result = $connection2->prepare($sql);
@@ -69,7 +69,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ed
             header("Location: {$URL}");
         } else {
             //Validate Inputs
-            $role = $_POST['role'];
+            $role = $_POST['role'] ?? '';
 
             if ($role == '') {
                 //Fail 3

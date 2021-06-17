@@ -26,14 +26,14 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_approveCommitments.php') == false) {
 
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    $role = staffCASRole($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2);
+    $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) { $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
     

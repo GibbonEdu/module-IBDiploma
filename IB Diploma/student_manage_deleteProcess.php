@@ -32,11 +32,11 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
-$ibDiplomaStudentID = $_POST['ibDiplomaStudentID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/student_manage_delete.php&ibDiplomaStudentID=$ibDiplomaStudentID";
-$URLDelete = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/student_manage.php';
+$ibDiplomaStudentID = $_POST['ibDiplomaStudentID'] ?? '';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/student_manage_delete.php&ibDiplomaStudentID=$ibDiplomaStudentID";
+$URLDelete = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/student_manage.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_delete.php') == false) {
     //Fail 0
