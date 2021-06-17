@@ -35,23 +35,23 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_reflections_add.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_reflections_add.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_reflections_add.php') == false) {
     //Fail 0
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Fail 0
         $URL = $URL.'&return=error0';
         header("Location: {$URL}");
     } else {
         //Proceed!
-        $title = $_POST['title'];
-        $reflection = $_POST['reflection'];
+        $title = $_POST['title'] ?? '';
+        $reflection = $_POST['reflection'] ?? '';
         if ($_POST['type'] == 'Commitment Reflection') {
             $ibDiplomaCASCommitmentID = $_POST['ibDiplomaCASCommitmentID'];
         } else {
@@ -64,7 +64,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
             header("Location: {$URL}");
         } else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'title' => $title, 'reflection' => $reflection, 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'title' => $title, 'reflection' => $reflection, 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
                 $sql = 'INSERT INTO ibDiplomaCASReflection SET gibbonPersonID=:gibbonPersonID, title=:title, reflection=:reflection, ibDiplomaCASCommitmentID=:ibDiplomaCASCommitmentID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);

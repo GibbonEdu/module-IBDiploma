@@ -26,33 +26,33 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStudents.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    $role = staffCASRole($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2);
+    $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
         $page->breadcrumbs->add(__('Advise CAS Students'));
-        
+
         $CASStudentGateway = $container->get(CASStudentGateway::class);
         $userGateway = $container->get(UserGateway::class);
         $gibbonSchoolYearID = $gibbon->session->get('gibbonSchoolYearID');
         $gibbonSchoolYearSequenceNumber = $gibbon->session->get('gibbonSchoolYearSequenceNumber');
         $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
-        
-        $gibbonRollGroupID = $_GET['gibbonRollGroupID'] ?? NULL;
+
+        $gibbonformGroupID = $_GET['gibbonformGroupID'] ?? NULL;
         $criteria = $CASStudentGateway
             ->newQueryCriteria()
             ->searchBy($CASStudentGateway->getSearchableColumns(), $_GET['search'] ?? '')
-            ->filterBy('gibbonRollGroupID', $gibbonRollGroupID)
+            ->filterBy('gibbonformGroupID', $gibbonformGroupID)
             ->fromPOST();
         if ($role == 'Coordinator') {
-         
+
         } else {   
             $criteria->addFilterRules([
                 'advisor' => function ($query, $gibbonPersonID) {
@@ -62,9 +62,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 }
             ]);
         }
-    
+
         $students = $CASStudentGateway->queryCASStudents($criteria, $gibbonSchoolYearID, $gibbonSchoolYearSequenceNumber, $gibbonPersonID);
-        
+
         $form = Form::create('searchForm', $gibbon->session->get('absoluteURL') . '/index.php', 'get');
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
@@ -79,32 +79,32 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 ->description(__('Student Name'));
             $row->addTextField('search')
                 ->setValue($criteria->getSearchText());
-    
+
         $row = $form->addRow();
-            $row->addLabel('gibbonRollGroupID', __('Roll Group'));
-            $row->addSelectRollGroup('gibbonRollGroupID', $gibbon->session->get('gibbonSchoolYearID'))->selected($gibbonRollGroupID)->placeholder();
-    
+            $row->addLabel('gibbonformGroupID', __('Form Group'));
+            $row->addSelectformGroup('gibbonformGroupID', $gibbon->session->get('gibbonSchoolYearID'))->selected($gibbonformGroupID)->placeholder();
+
         $row = $form->addRow();
             $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
 
-        echo $form->getOutput();    
-        
-        
+        echo $form->getOutput();
+
+
         $table = DataTable::createPaginated('CASStudents', $criteria);
         $table->setTitle('Students');
         $table->setDescription(__m('Your CAS staff role is ' . $role .'. The students listed below are determined by your role, and student-staff relationship assignment.'));
-        $table->addColumn('gibbonPersonID', __('Student')) 
+        $table->addColumn('gibbonPersonID', __('Student'))
                 ->description(__('CAS Advisor'))
                 ->format(function ($row) use ($userGateway) {
                     $student = $userGateway->getByID($row['gibbonPersonID']);
                     $advisor = $userGateway->getByID($row['gibbonPersonIDCASAdvisor']);
-                    
+
                     return Format::name($student['title'], $student['preferredName'], $student['surname'], 'Student') . '<br/>'. Format::small(__(Format::name($advisor['title'], $advisor['preferredName'], $advisor['surname'], 'Staff')));
                 });
-        $table->addColumn('rollGroup', __('Roll Group'))
+        $table->addColumn('formGroup', __('Form Group'))
             ->description(__('Starting Year'))
             ->format(function ($row) {
-                return __($row['rollGroup']) . '<br/>'. Format::small(__($row['start']));
+                return __($row['formGroup']) . '<br/>'. Format::small(__($row['start']));
             });
         $table->addColumn('casStatusSchool', __('Status'));
         $table->addActionColumn()
@@ -115,9 +115,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         ->setIcon('page_right');
             });
 
-    
-        echo $table->render($students);    
-   
+
+        echo $table->render($students);
+
     }
 }
 ?>

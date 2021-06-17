@@ -23,13 +23,13 @@ use Gibbon\Forms\DatabaseFormFactory;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments_add.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -40,7 +40,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         $returns = array();
         $editLink = '';
         if (isset($_GET['editID'])) {
-            $editLink = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/IB Diploma/cas_student_myCommitments_edit.php&ibDiplomaCASCommitmentID='.$_GET['editID'];
+            $editLink = $session->get('absoluteURL').'/index.php?q=/modules/IB Diploma/cas_student_myCommitments_edit.php&ibDiplomaCASCommitmentID='.$_GET['editID'];
         }
         if (isset($_GET['return'])) {
             returnProcess($guid, $_GET['return'], $editLink, $returns);
@@ -57,9 +57,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         //Step 1
         if ($step == 1) {
         
-        $form = Form::create('commitmentType',$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_add.php&step=2');
+        $form = Form::create('commitmentType',$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/cas_student_myCommitments_add.php&step=2');
             
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('step', 2);
            
                $form->addRow()->addHeading(__('Commitment Source'));
@@ -69,7 +69,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
             $row->addRadio("type1")->fromArray(array("New" =>__("New"), "From School Activity" =>__("From School Activity")))->inline();
            
 
-                $dataSelect = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID']);
+                $dataSelect = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'));
                 $sqlSelect = "SELECT gibbonActivity.gibbonActivityID as value, gibbonActivity.name as name FROM gibbonActivity JOIN gibbonActivityStudent ON (gibbonActivity.gibbonActivityID=gibbonActivityStudent.gibbonActivityID) WHERE active='Y' AND gibbonPersonID=:gibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID ORDER BY name";
 
             
@@ -131,9 +131,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                         }
                     } 
                     
-                    $form = Form::create('addCommitment', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_addProcess.php');
+                    $form = Form::create('addCommitment', $session->get('absoluteURL').'/modules/'.$session->get('module').'/cas_student_myCommitments_addProcess.php');
                         
-                        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                        $form->addHiddenValue('address', $session->get('address'));
                         $form->setFactory(DatabaseFormFactory::create($pdo));
                         
                         $form->addRow()->addHeading(__('Basic Information'));

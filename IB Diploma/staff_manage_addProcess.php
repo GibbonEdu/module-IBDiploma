@@ -32,23 +32,23 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/staff_manage_add.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/staff_manage_add.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_add.php') == false) {
 
     //Fail 0
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
-    
+
 } else {
     //Proceed!
-    $gibbonPersonID = $_POST['gibbonPersonID'];
-    $role = $_POST['role'];
+    $gibbonPersonID = $_POST['gibbonPersonID'] ?? '';
+    $role = $_POST['role'] ?? '';
 
     if ($gibbonPersonID == '' or $role == '') {
-        
+
         //Fail 3
         $URL = $URL.'&return=error3';
         header("Location: {$URL}");

@@ -22,7 +22,7 @@ use Gibbon\Forms\Form;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 $key = null;
 if (isset($_GET['key'])) {
@@ -90,9 +90,9 @@ if ($resultKey->rowCount() < 1) {
             echo '</table>';
 
             
-            $form = Form::create('supervisorEvaluation',$_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_supervisorProcess.php", "post");
+            $form = Form::create('supervisorEvaluation',$session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_supervisorProcess.php", "post");
             
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('key', $key);
             
                 $row = $form->addRow();

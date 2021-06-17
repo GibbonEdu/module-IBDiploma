@@ -23,7 +23,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_edit.php') == false) {
 
@@ -58,12 +58,12 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ed
             $values = $result->fetch();
            
             
-            $form = Form::create('editStaff', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/staff_manage_editProcess.php?ibDiplomaCASStaffID='.$ibDiplomaCASStaffID.'', 'post');
+            $form = Form::create('editStaff', $session->get('absoluteURL').'/modules/'.$session->get('module').'/staff_manage_editProcess.php?ibDiplomaCASStaffID='.$ibDiplomaCASStaffID.'', 'post');
              
              $form->setFactory(DatabaseFormFactory::create($pdo));
             
             
-             $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+             $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('ibDiplomaCASStaffID', $ibDiplomaCASStaffID);
             
              $form->setFactory(DatabaseFormFactory::create($pdo));

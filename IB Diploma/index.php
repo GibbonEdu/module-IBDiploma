@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isModuleAccessible($guid, $connection2) == false) {
     //Acess denied
@@ -70,6 +70,6 @@ if (isModuleAccessible($guid, $connection2) == false) {
     echo 'IB Diploma Structure';
     echo '</h1>';
     echo '<p>';
-    echo "<img title='IB Diploma Structure Chart' src='".$_SESSION[$guid]['absoluteURL']."/modules/IB Diploma/img/IBDiplomaChart.png'><br/>";
+    echo "<img title='IB Diploma Structure Chart' src='".$session->get('absoluteURL')."/modules/IB Diploma/img/IBDiplomaChart.png'><br/>";
     echo '</p>';
 }

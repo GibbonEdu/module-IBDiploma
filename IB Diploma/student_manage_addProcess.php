@@ -32,9 +32,9 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/student_manage_add.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/student_manage_add.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_add.php') == false) {
 
@@ -43,13 +43,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
     header("Location: {$URL}");
 } else {
     //Proceed!
-    $gibbonSchoolYearIDStart = $_POST['gibbonSchoolYearIDStart'];
-    $gibbonSchoolYearIDEnd = $_POST['gibbonSchoolYearIDEnd'];
-    if ($_POST['gibbonPersonIDCASAdvisor'] != '') {
-        $gibbonPersonIDCASAdvisor = $_POST['gibbonPersonIDCASAdvisor'];
-    } else {
-        $gibbonPersonIDCASAdvisor = null;
-    }
+    $gibbonSchoolYearIDStart = $_POST['gibbonSchoolYearIDStart'] ?? '';
+    $gibbonSchoolYearIDEnd = $_POST['gibbonSchoolYearIDEnd'] ?? '';
+    $gibbonPersonIDCASAdvisor = $_POST['gibbonPersonIDCASAdvisor'] ?? '';
 
     if ($gibbonSchoolYearIDStart == '' or $gibbonSchoolYearIDEnd == '') {
         //Fail 3
@@ -57,7 +53,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
         header("Location: {$URL}");
     } else {
         $update = true;
-        $choices = $_POST['gibbonPersonID'];
+        $choices = $_POST['gibbonPersonID'] ?? '';
 
         if (count($choices) < 1) {
             //Fail 2
