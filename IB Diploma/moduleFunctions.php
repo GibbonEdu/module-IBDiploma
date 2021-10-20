@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function enroled($guid, $gibbonPersonID, $connection2)
 {
+    global $session;
     $output = false;
 
     try {
@@ -38,6 +39,7 @@ function enroled($guid, $gibbonPersonID, $connection2)
 
 function staffCASRole($guid,  $gibbonPersonID, $connection2)
 {
+    global $session;
     $output = false;
 
     try {

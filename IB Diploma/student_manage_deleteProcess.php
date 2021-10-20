@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 include '../../config.php';
+require_once '../../gibbon.php';
 
 //New PDO DB connection
 try {

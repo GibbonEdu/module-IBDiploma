@@ -46,11 +46,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage.
         $gibbonSchoolYearSequenceNumber = $gibbon->session->get('gibbonSchoolYearSequenceNumber');
         $gibbonPersonID = $gibbon->session->get('gibbonPersonID');
         
-        $gibbonRollGroupID = $_GET['gibbonRollGroupID'] ?? NULL;
+        $gibbonFormGroupID = $_GET['gibbonFormGroupID'] ?? NULL;
         $criteria = $CASStudentGateway
             ->newQueryCriteria()
             ->searchBy($CASStudentGateway->getSearchableColumns(), $_GET['search'] ?? '')
-            ->filterBy('gibbonRollGroupID', $gibbonRollGroupID)
+            ->filterBy('gibbonFormGroupID', $gibbonFormGroupID)
             ->fromPOST();
 
     
@@ -72,8 +72,8 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage.
                 ->setValue($criteria->getSearchText());
     
         $row = $form->addRow();
-            $row->addLabel('gibbonRollGroupID', __('Roll Group'));
-            $row->addSelectRollGroup('gibbonRollGroupID', $gibbon->session->get('gibbonSchoolYearID'))->selected($gibbonRollGroupID)->placeholder();
+            $row->addLabel('gibbonFormGroupID', __('Form Group'));
+            $row->addSelectFormGroup('gibbonFormGroupID', $gibbon->session->get('gibbonSchoolYearID'))->selected($gibbonFormGroupID)->placeholder();
     
         $row = $form->addRow();
             $row->addSearchSubmit($gibbon->session, __('Clear Filters'));
@@ -96,7 +96,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage.
                     
                     return Format::name($student['title'], $student['preferredName'], $student['surname'], 'Student') . '<br/>'. Format::small(__(Format::name($advisor['title'], $advisor['preferredName'], $advisor['surname'], 'Staff')));
                 });
-        $table->addColumn('rollGroup', __('Roll Group'));
+        $table->addColumn('formGroup', __('Form Group'));
         $table->addColumn('start', __('Start'));
         $table->addColumn('end', __('End'));
         $table->addActionColumn()
