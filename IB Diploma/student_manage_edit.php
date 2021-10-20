@@ -23,7 +23,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_edit.php') == false) {
     //Acess denied
@@ -42,7 +42,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
     if ($ibDiplomaStudentID == 'Y') {$page->addError(__('You have not specified an activity.'));
     } else {
         try {
-            $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'ibDiplomaStudentID' => $ibDiplomaStudentID);
+            $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'ibDiplomaStudentID' => $ibDiplomaStudentID);
             $sql = "SELECT ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonSchoolYearIDStart, gibbonSchoolYearIDEnd, gibbonPersonIDCASAdvisor FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND ibDiplomaStudentID=:ibDiplomaStudentID ORDER BY start.sequenceNumber, surname, preferredName";
             $result = $connection2->prepare($sql);
             $result->execute($data);
@@ -58,19 +58,19 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
             //Let's go!
             $values = $result->fetch();
 
-            $form = Form::create('editStudent', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/student_manage_editProcess.php?ibDiplomaStudentID='.$ibDiplomaStudentID, 'post');
+            $form = Form::create('editStudent', $session->get('absoluteURL').'/modules/'.$session->get('module').'/student_manage_editProcess.php?ibDiplomaStudentID='.$ibDiplomaStudentID, 'post');
              
              $form->setFactory(DatabaseFormFactory::create($pdo));
             
             
-             $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+             $form->addHiddenValue('address', $session->get('address'));
              
             
             $row = $form->addRow();
                 $row->addLabel('Student',__('Student'));
                 $row->addTextField('gibbonPersonName')->readOnly()->setValue(formatName('', $values['preferredName'], $values['surname'], 'Student', true, true));
             
-            $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID']);
+            $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'));
             $sql = "SELECT gibbonSchoolYearID as value,name FROM gibbonSchoolYear ORDER BY sequenceNumber";
             $row = $form->addRow();
                 $row->addLabel('gibbonSchoolYearIDStart', __('Start Year'));

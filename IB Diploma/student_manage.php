@@ -26,7 +26,7 @@ use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage.php') == false) {
     //Acess denied

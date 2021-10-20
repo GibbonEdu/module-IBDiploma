@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments.php') == false) {
 
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         }
 
         try {
-            $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+            $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID ORDER BY approval, name';
             $result = $connection2->prepare($sql);
             $result->execute($data);
@@ -48,7 +48,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         }
 
         echo "<div class='linkTop'>";
-        echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/cas_student_myCommitments_add.php'><img title='New' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_new.png'/></a>";
+        echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/cas_student_myCommitments_add.php'><img title='New' src='./themes/".$session->get('gibbonThemeName')."/img/page_new.png'/></a>";
         echo '</div>';
 
         if ($result->rowCount() < 1) {
@@ -116,11 +116,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                 }
                 echo '</td>';
                 echo '<td>';
-                echo "<a class='thickbox' href='".$_SESSION[$guid]['absoluteURL'].'/fullscreen.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_view.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a> ";
+                echo "<a class='thickbox' href='".$session->get('absoluteURL').'/fullscreen.php?q=/modules/'.$session->get('module').'/cas_student_myCommitments_view.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$session->get('gibbonThemeName')."/img/page_right.png'/></a> ";
                 if ($row['approval'] == 'Approved') {
-                    echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_edit.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."'><img title='Edit' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/config.png'/></a> ";
+                    echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/cas_student_myCommitments_edit.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."'><img title='Edit' src='./themes/".$session->get('gibbonThemeName')."/img/config.png'/></a> ";
                 }
-                echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_delete.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."'><img title='Delete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/garbage.png'/></a> ";
+                echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/cas_student_myCommitments_delete.php&ibDiplomaCASCommitmentID='.$row['ibDiplomaCASCommitmentID']."'><img title='Delete' src='./themes/".$session->get('gibbonThemeName')."/img/garbage.png'/></a> ";
                 echo '</td>';
                 echo '</tr>';
             }

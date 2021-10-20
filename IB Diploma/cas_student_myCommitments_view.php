@@ -20,13 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments_view.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this page.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -41,7 +41,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         //Check existence of and access to this class.
         else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
                 $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASCommitmentID=:ibDiplomaCASCommitmentID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -60,7 +60,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
 
                 echo "<div style='width:510px; float: left; font-size: 115%; margin-top: -5px'>";
                 try {
-                    $dataReflections = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
+                    $dataReflections = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
                     $sqlReflections = 'SELECT * FROM ibDiplomaCASReflection WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASCommitmentID=:ibDiplomaCASCommitmentID ORDER BY timestamp';
                     $resultReflections = $connection2->prepare($sqlReflections);
                     $resultReflections->execute($dataReflections);

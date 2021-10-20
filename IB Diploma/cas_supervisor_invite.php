@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 //LOAD FORM OBJECTS
 use Gibbon\Forms\Form;
@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    $role = staffCASRole($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2);
+    $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) { $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
 
@@ -56,9 +56,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
             echo 'Step 1';
             echo '</h3>';
 
-            $form = Form::create('invitationType',$_SESSION[$guid]['absoluteURL'].'/index.php', 'get');
+            $form = Form::create('invitationType',$session->get('absoluteURL').'/index.php', 'get');
             
-            $form->addHiddenValue('q', '/modules/'.$_SESSION[$guid]['module'].'/cas_supervisor_invite.php');
+            $form->addHiddenValue('q', '/modules/'.$session->get('module').'/cas_supervisor_invite.php');
             $form->addHiddenValue('step', 2);
             
             $row = $form->addRow();
@@ -82,7 +82,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
             echo '</h3>';
             
             
-            $form = Form::create('supervisorInvite',$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module']."/cas_supervisor_invite.php&step=3'", 'post');
+            $form = Form::create('supervisorInvite',$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module')."/cas_supervisor_invite.php&step=3'", 'post');
             
             $form->setFactory(DatabaseFormFactory::create($pdo));
             
@@ -90,10 +90,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                 
                  try {
                     if ($role == 'Coordinator') {
-                        $data = array('coordinator' => $_SESSION[$guid]['gibbonPersonID']);
+                        $data = array('coordinator' => $session->get('gibbonPersonID'));
                         $sql = "SELECT gibbonPerson.gibbonPersonID as value, concat(gibbonPerson.surname,', ',gibbonPerson.firstName, ' (', gibbonRollGroup.nameShort,')') as name FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonPerson.status='Full' ORDER BY nameShort, surname, preferredName";
                     } else {
-                        $data = array('advisor' => $_SESSION[$guid]['gibbonPersonID']);
+                        $data = array('advisor' => $session->get('gibbonPersonID'));
                         $sql = "SELECT gibbonPerson.gibbonPersonID as value, concat(gibbonPerson.surname,', ',gibbonPerson.firstName, ' (', gibbonRollGroup.nameShort,')') as name FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID)  LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonPerson.status='Full' AND gibbonPersonIDCASAdvisor=:advisor ORDER BY nameShort, surname, preferredName";
                     }
                 } catch (PDOException $e) {
@@ -152,10 +152,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                 } else {
                     try {
                         if ($role == 'Coordinator') {
-                            $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'gibbonPersonID' => $gibbonPersonID);
+                            $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'gibbonPersonID' => $gibbonPersonID);
                             $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
                         } else {
-                            $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'advisor' => $_SESSION[$guid]['gibbonPersonID'], 'gibbonPersonID' => $gibbonPersonID);
+                            $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'advisor' => $session->get('gibbonPersonID'), 'gibbonPersonID' => $gibbonPersonID);
                             $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
                         }
                         $result = $connection2->prepare($sql);
@@ -255,13 +255,13 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                                             }
 
                                             $to = $values['supervisorEmail'];
-                                            $subject = $_SESSION[$guid]['organisationNameShort'].' CAS Supervisor Feedback Request';
+                                            $subject = $session->get('organisationNameShort').' CAS Supervisor Feedback Request';
                                             $body = 'Dear '.$values['supervisorName'].',<br/><br/>';
-                                            $body = $body."We greatly appreciate your support as a CAS activity supervisor to $student (".$_SESSION[$guid]['organisationName'].'). In order for this activity ('.$values['name'].') to count towards '.$studentFirst."'s IB Diploma, we require a small amount of feedback from you.<br/><br/>";
-                                            $body = $body."If you are willing and able to provide us with this feedback, you may do so by <a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key'>clicking here</a>.<br/><br/>";
+                                            $body = $body."We greatly appreciate your support as a CAS activity supervisor to $student (".$session->get('organisationName').'). In order for this activity ('.$values['name'].') to count towards '.$studentFirst."'s IB Diploma, we require a small amount of feedback from you.<br/><br/>";
+                                            $body = $body."If you are willing and able to provide us with this feedback, you may do so by <a href='".$session->get('absoluteURL')."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key'>clicking here</a>.<br/><br/>";
                                             $body = $body.'Your assistance is most appreciated. Regards,<br/><br/>';
-                                            $body = $body.$_SESSION[$guid]['preferredName'].' '.$_SESSION[$guid]['surname'];
-                                            $headers = 'From: '.$_SESSION[$guid]['email']."\r\n";
+                                            $body = $body.$session->get('preferredName').' '.$session->get('surname');
+                                            $headers = 'From: '.$session->get('email')."\r\n";
                                             $headers .= "MIME-Version: 1.0\r\n";
                                             $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
@@ -271,7 +271,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                                                 echo '</div>';
                                             } else {
                                                 echo "<div class='warning'>";
-                                                echo 'The invite has been created, but could not be emailed. You may email the following link supervisor ('.$values['supervisorName'].') at '.$values['supervisorEmail'].': '.$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key";
+                                                echo 'The invite has been created, but could not be emailed. You may email the following link supervisor ('.$values['supervisorName'].') at '.$values['supervisorEmail'].': '.$session->get('absoluteURL')."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key";
                                                 echo '</div>';
                                             }
                                         }
@@ -285,10 +285,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                 //Get list of students
                 try {
                     if ($role == 'Coordinator') {
-                        $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber']);
+                        $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'));
                         $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd ORDER BY rollGroup, surname, preferredName";
                     } else {
-                        $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'advisor' => $_SESSION[$guid]['gibbonPersonID']);
+                        $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'advisor' => $session->get('gibbonPersonID'));
                         $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor ORDER BY rollGroup, surname, preferredName";
                     }
                     $result = $connection2->prepare($sql);
@@ -385,13 +385,13 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
 
                                             if ($proceed) {
                                                 $to = $valuesCommitment['supervisorEmail'];
-                                                $subject = $_SESSION[$guid]['organisationNameShort'].' CAS Supervisor Feedback Request';
+                                                $subject = $session->get('organisationNameShort').' CAS Supervisor Feedback Request';
                                                 $body = 'Dear '.$valuesCommitment['supervisorName'].',<br/><br/>';
-                                                $body = $body."We great appreciate your support as a CAS activity supervisor to $student (".$_SESSION[$guid]['organisationName'].'). In order for this activity ('.$valuesCommitment['name'].') to count towards '.$studentFirst."'s IB Diploma, we require a small amount of feedback from you.<br/><br/>";
-                                                $body = $body."If you are willing and able to provide us with this feedback, you may do so by <a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key'>clicking here</a>.<br/><br/>";
+                                                $body = $body."We great appreciate your support as a CAS activity supervisor to $student (".$session->get('organisationName').'). In order for this activity ('.$valuesCommitment['name'].') to count towards '.$studentFirst."'s IB Diploma, we require a small amount of feedback from you.<br/><br/>";
+                                                $body = $body."If you are willing and able to provide us with this feedback, you may do so by <a href='".$session->get('absoluteURL')."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key'>clicking here</a>.<br/><br/>";
                                                 $body = $body.'Your assistance is most appreciated. Regards,<br/><br/>';
-                                                $body = $body.$_SESSION[$guid]['preferredName'].' '.$_SESSION[$guid]['surname'];
-                                                $headers = 'From: '.$_SESSION[$guid]['email']."\r\n";
+                                                $body = $body.$session->get('preferredName').' '.$session->get('surname');
+                                                $headers = 'From: '.$session->get('email')."\r\n";
                                                 $headers .= "MIME-Version: 1.0\r\n";
                                                 $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
@@ -401,7 +401,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
                                                     echo '</div>';
                                                 } else {
                                                     echo "<div class='warning'>";
-                                                    echo $valuesCommitment['name'].': An invite has been created, but could not be email. You may email the following link supervisor ('.$values['supervisorName'].') at '.$values['supervisorEmail'].': '.$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key";
+                                                    echo $valuesCommitment['name'].': An invite has been created, but could not be email. You may email the following link supervisor ('.$values['supervisorName'].') at '.$values['supervisorEmail'].': '.$session->get('absoluteURL')."/index.php?q=/modules/IB Diploma/cas_supervisor.php&key=$key";
                                                     echo '</div>';
                                                 }
                                             }

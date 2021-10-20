@@ -22,14 +22,14 @@ use Gibbon\Forms\Prefab\DeleteForm;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments_delete.php') == false) {
 
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -48,7 +48,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
             $page->addError(__('You have not specified a student member.'));
         } else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
                 $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASCommitmentID=:ibDiplomaCASCommitmentID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -62,10 +62,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                 //Let's go!
                 $values = $result->fetch();
                      echo "<div class='linkTop'>";
-                     echo "<a href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_GET['q'])."/cas_student_myCommitments.php'>".__('Back').'</a>';
+                     echo "<a href='".$session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_GET['q'])."/cas_student_myCommitments.php'>".__('Back').'</a>';
                      echo '</div>';
 
-                $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/cas_student_myCommitments_deleteProcess.php?ibDiplomaCASCommitmentID=$ibDiplomaCASCommitmentID'."&ibDiplomaCASCommitmentID=".$_GET['ibDiplomaCASCommitmentID']);
+                $form = DeleteForm::createForm($session->get('absoluteURL').'/modules/'.$session->get('module').'/cas_student_myCommitments_deleteProcess.php?ibDiplomaCASCommitmentID=$ibDiplomaCASCommitmentID'."&ibDiplomaCASCommitmentID=".$_GET['ibDiplomaCASCommitmentID']);
                 echo $form->getOutput();
 
                 

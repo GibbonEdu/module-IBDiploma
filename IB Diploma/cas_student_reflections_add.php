@@ -22,13 +22,13 @@ use Gibbon\Forms\Form;
 
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_reflections_add.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -50,9 +50,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
         //Step 1
         if ($step == 1) {
         
-            $form = Form::create('reflectionType',$_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/cas_student_reflections_add.php&step=2');
+            $form = Form::create('reflectionType',$session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/cas_student_reflections_add.php&step=2');
             
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('step', 2);
            
                $form->addRow()->addHeading(__('Reflection Source'));
@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
             $row->addLabel('Reflection Type', __('Reflection Type'));
             $row->addRadio("type1")->fromArray(array("General CAS Reflection" =>__("General CAS Reflection"), "Commitment Reflection" =>__("Commitment Reflection")))->inline();
             
-            $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+            $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sql = "SELECT ibDiplomaCASCommitmentID as value, concat(ibDiplomaCASCommitment.name, ' (', ibDiplomaCASCommitment.supervisorName, ')') as name FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID";
             
             $form->toggleVisibilityByClass('ibDiplomaCASCommitmentID')->onRadio('type1')->when('Commitment Reflection');
@@ -106,9 +106,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                     }
                 }
             }
-            $form = Form::create('reflectionAdd', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/cas_student_reflections_addProcess.php');
+            $form = Form::create('reflectionAdd', $session->get('absoluteURL').'/modules/'.$session->get('module').'/cas_student_reflections_addProcess.php');
                 
-                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                $form->addHiddenValue('address', $session->get('address'));
                 
             
                 $row = $form->addRow();

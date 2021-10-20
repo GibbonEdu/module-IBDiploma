@@ -23,7 +23,7 @@ use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_add.php') == false) {
     //Acess denied
@@ -36,16 +36,16 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
         returnProcess($guid, $_GET['return'], null, null);
     }
     
-    $form = Form::create('addStudent', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/student_manage_addProcess.php');
+    $form = Form::create('addStudent', $session->get('absoluteURL').'/modules/'.$session->get('module').'/student_manage_addProcess.php');
     $form->setFactory(DatabaseFormFactory::create($pdo));
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
     
     
     $row = $form->addRow();
         $row->addLabel('gibbonPersonID', __('Students'));
-        $row->addSelectStudent('gibbonPersonID',$_SESSION[$guid]['gibbonSchoolYearID'], array('allStudents' => true, 'byName' => false, 'byRoll' => true, 'showRoll' => true))->selectMultiple()->isRequired();
+        $row->addSelectStudent('gibbonPersonID',$session->get('gibbonSchoolYearID'), array('allStudents' => true, 'byName' => false, 'byRoll' => true, 'showRoll' => true))->selectMultiple()->isRequired();
         
-    $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID']);
+    $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'));
     $sql = "SELECT gibbonSchoolYearID as value,name FROM gibbonSchoolYear ORDER BY sequenceNumber";
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearIDStart', __('Start Year'));

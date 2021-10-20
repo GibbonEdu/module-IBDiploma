@@ -22,13 +22,13 @@ use Gibbon\Forms\Prefab\DeleteForm;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_reflections_delete.php') == false) {
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -47,7 +47,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
             $page->addError(__('You have not specified a reflection'));
         } else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASReflectionID' => $ibDiplomaCASReflectionID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASReflectionID' => $ibDiplomaCASReflectionID);
                 $sql = 'SELECT * FROM ibDiplomaCASReflection WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASReflectionID=:ibDiplomaCASReflectionID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                 //Let's go!
                 $values = $result->fetch();
                 
-                $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_student_reflections_deleteProcess.php?ibDiplomaCASReflectionID=$ibDiplomaCASReflectionID");
+                $form = DeleteForm::createForm($session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_student_reflections_deleteProcess.php?ibDiplomaCASReflectionID=$ibDiplomaCASReflectionID");
                 echo $form->getOutput();
             }
         }

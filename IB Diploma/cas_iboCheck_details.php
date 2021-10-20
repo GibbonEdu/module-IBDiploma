@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_details.php') == false) {
 
@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
     if ($gibbonPersonID == '') { $page->addError(__('You have not specified a student.'));
     } else {
         try {
-            $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'gibbonPersonID' => $gibbonPersonID);
+            $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'gibbonPersonID' => $gibbonPersonID);
             $sql = "SELECT gibbonPerson.gibbonPersonID, gibbonStudentEnrolment.gibbonYearGroupID, gibbonStudentEnrolment.gibbonRollGroupID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID";
             $result = $connection2->prepare($sql);
             $result->execute($data);
@@ -132,15 +132,15 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
             $casStatusSchool = $values['casStatusSchool'];
             echo "<span style='font-size: 115%; font-weight: bold'>CAS Status</span><br/>";
             if ($values['casStatusSchool'] == 'At Risk') {
-                echo "<img title='At Risk' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconCross.png'/>";
+                echo "<img title='At Risk' src='./themes/".$session->get('gibbonThemeName')."/img/iconCross.png'/>";
             } elseif ($values['casStatusSchool'] == 'On Task') {
-                echo "<img title='On Task' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick.png'/>";
+                echo "<img title='On Task' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/>";
             } elseif ($values['casStatusSchool'] == 'Excellence') {
-                echo "<img title='Excellence' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/like_on_small.png'/>";
+                echo "<img title='Excellence' src='./themes/".$session->get('gibbonThemeName')."/img/like_on_small.png'/>";
             } elseif ($values['casStatusSchool'] == 'Incomplete') {
-                echo "<img title='Incomplete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconCross.png'/> Incomplete";
+                echo "<img title='Incomplete' src='./themes/".$session->get('gibbonThemeName')."/img/iconCross.png'/> Incomplete";
             } elseif ($values['casStatusSchool'] == 'Complete') {
-                echo "<img title='Complete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick.png'/> Complete";
+                echo "<img title='Complete' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/> Complete";
             }
             echo '</td>';
             echo '</tr>';
@@ -223,7 +223,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
                     }
                     echo '</td>';
                     echo '<td>';
-                    echo "<a class='thickbox' href='".$_SESSION[$guid]['absoluteURL'].'/fullscreen.php?q=/modules/'.$_SESSION[$guid]['module']."/cas_iboCheck_full.php&gibbonPersonID=$gibbonPersonID&ibDiplomaCASCommitmentID=".$values['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a> ";
+                    echo "<a class='thickbox' href='".$session->get('absoluteURL').'/fullscreen.php?q=/modules/'.$session->get('module')."/cas_iboCheck_full.php&gibbonPersonID=$gibbonPersonID&ibDiplomaCASCommitmentID=".$values['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$session->get('gibbonThemeName')."/img/page_right.png'/></a> ";
                     echo '</td>';
                     echo '</tr>';
                 }
@@ -350,7 +350,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
                         echo '});';
                         echo '});';
                         echo '</script>';
-                        echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$_SESSION[$guid]['absoluteURL']."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
+                        echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$session->get('absoluteURL')."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
                         echo '</td>';
                         echo '</tr>';
                         echo "<tr class='comment-$count' id='comment-$count'>";

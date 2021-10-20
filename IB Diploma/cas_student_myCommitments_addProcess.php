@@ -35,16 +35,16 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_myCommitments_add.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_myCommitments_add.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments_add.php') == false) {
     //Fail 0
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Fail 0
         $URL = $URL.'&return=error0';
         header("Location: {$URL}");
@@ -72,7 +72,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         } else {
             //Check unique inputs for uniqueness
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'name' => $name);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'name' => $name);
                 $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND name=:name';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -89,7 +89,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                 header("Location: {$URL}");
             } else {
                 try {
-                    $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'name' => $name, 'status' => $status, 'dateStart' => $dateStart, 'dateEnd' => $dateEnd, 'supervisorName' => $supervisorName, 'supervisorEmail' => $supervisorEmail, 'supervisorPhone' => $supervisorPhone, 'description' => $description);
+                    $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'name' => $name, 'status' => $status, 'dateStart' => $dateStart, 'dateEnd' => $dateEnd, 'supervisorName' => $supervisorName, 'supervisorEmail' => $supervisorEmail, 'supervisorPhone' => $supervisorPhone, 'description' => $description);
                     $sql = 'INSERT INTO ibDiplomaCASCommitment SET gibbonPersonID=:gibbonPersonID, name=:name, status=:status, dateStart=:dateStart, dateEnd=:dateEnd, supervisorName=:supervisorName, supervisorEmail=:supervisorEmail, supervisorPhone=:supervisorPhone, description=:description';
                     $result = $connection2->prepare($sql);
                     $result->execute($data);

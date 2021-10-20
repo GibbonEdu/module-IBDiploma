@@ -35,18 +35,18 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
 $ibDiplomaCASReflectionID = $_POST['ibDiplomaCASReflectionID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_student_reflections_delete.php&ibDiplomaCASReflectionID=$ibDiplomaCASReflectionID";
-$URLDelete = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_reflections.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_student_reflections_delete.php&ibDiplomaCASReflectionID=$ibDiplomaCASReflectionID";
+$URLDelete = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_reflections.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_reflections_delete.php') == false) {
     //Fail 0
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Fail 0
         $URL = $URL.'&return=error0';
         header("Location: {$URL}");
@@ -58,7 +58,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
             header("Location: {$URL}");
         } else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASReflectionID' => $ibDiplomaCASReflectionID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASReflectionID' => $ibDiplomaCASReflectionID);
                 $sql = 'SELECT * FROM ibDiplomaCASReflection WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASReflectionID=:ibDiplomaCASReflectionID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);

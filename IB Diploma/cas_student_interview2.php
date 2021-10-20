@@ -23,14 +23,14 @@ use Gibbon\Forms\DatabaseFormFactory;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_interview2.php') == false) {
 
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Acess denied
         $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
@@ -46,7 +46,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_int
         }
 
         try {
-            $dataInterview = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+            $dataInterview = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sqlInterview = 'SELECT ibDiplomaCASInterview.*, surname, preferredName FROM ibDiplomaCASInterview JOIN gibbonPerson ON (ibDiplomaCASInterview.1_gibbonPersonIDInterviewer=gibbonPerson.gibbonPersonID) WHERE gibbonPersonIDInterviewee=:gibbonPersonID';
             $resultInterview = $connection2->prepare($sqlInterview);
             $resultInterview->execute($dataInterview);
@@ -62,15 +62,15 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_int
             } else {
                 $rowInterview = $resultInterview->fetch();
                 
-                $form = Form::create('interview2', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_student_interview2Process.php");
+                $form = Form::create('interview2', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_student_interview2Process.php");
 
-                        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                        $form->addHiddenValue('address', $session->get('address'));
                     
                         $form->addRow()->addHeading(__('Outcomes'));
                             $formRow = $form->addRow();
                     
                         try {
-                            $dataList = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+                            $dataList = array('gibbonPersonID' => $session->get('gibbonPersonID'));
                             $sqlList = "SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved' ORDER BY name";
                             $resultList = $connection2->prepare($sqlList);
                             $resultList->execute($dataList);
@@ -127,7 +127,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_int
                                 }
                             }
                         
-                                $data =  array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
+                                $data =  array('gibbonPersonID' => $session->get('gibbonPersonID'));
                                 $sql = "SELECT name as name, ibDiplomaCASCommitmentID as value FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved'";
                                 $row = $form->addRow()->addClass('tags');
                                     $column = $row->addColumn();
