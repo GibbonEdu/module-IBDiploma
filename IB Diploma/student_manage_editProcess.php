@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 include '../../config.php';
+require_once '../../gibbon.php';
 
 //New PDO DB connection
 try {
@@ -32,10 +33,10 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
 $ibDiplomaStudentID = $_GET['ibDiplomaStudentID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/student_manage_edit.php&ibDiplomaStudentID=".$ibDiplomaStudentID;
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/student_manage_edit.php&ibDiplomaStudentID=".$ibDiplomaStudentID;
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_edit.php') == false) {
 

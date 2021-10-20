@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 include '../../config.php';
+require_once '../../gibbon.php';
 
 //Module includes
 include './moduleFunctions.php';
@@ -35,11 +36,11 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
 $ibDiplomaCASCommitmentID = $_POST['ibDiplomaCASCommitmentID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_student_myCommitments_delete.php&ibDiplomaCASCommitmentID=$ibDiplomaCASCommitmentID";
-$URLDelete = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_myCommitments.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_student_myCommitments_delete.php&ibDiplomaCASCommitmentID=$ibDiplomaCASCommitmentID";
+$URLDelete = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address']).'/cas_student_myCommitments.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myCommitments_delete.php') == false) {
 
@@ -47,7 +48,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
 } else {
-    if (enroled($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2) == false) {
+    if (enroled($guid, $session->get('gibbonPersonID'), $connection2) == false) {
         //Fail 0
         $URL = $URL.'&return=error0';
         header("Location: {$URL}");
@@ -59,7 +60,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
             header("Location: {$URL}");
         } else {
             try {
-                $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
+                $data = array('gibbonPersonID' => $session->get('gibbonPersonID'), 'ibDiplomaCASCommitmentID' => $ibDiplomaCASCommitmentID);
                 $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND ibDiplomaCASCommitmentID=:ibDiplomaCASCommitmentID';
                 $result = $connection2->prepare($sql);
                 $result->execute($data);

@@ -23,7 +23,7 @@ use Gibbon\Forms\DatabaseFormFactory;
 @session_start();
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_add.php') == false) {
 
@@ -38,7 +38,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ad
     $returns['error4'] = __('Add failed because the selected person is already registered.');
     $editLink = '';
     if (isset($_GET['editID'])) {
-        $editLink = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/IB Diploma/staff_manage_edit.php&ibDiplomaCASStaffID='.$_GET['editID'];
+        $editLink = $session->get('absoluteURL').'/index.php?q=/modules/IB Diploma/staff_manage_edit.php&ibDiplomaCASStaffID='.$_GET['editID'];
     }
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], $editLink, $returns);
@@ -53,9 +53,9 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ad
     }
     
     
-    $form = Form::create('addStaff',  $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/staff_manage_addProcess.php', 'post');
+    $form = Form::create('addStaff',  $session->get('absoluteURL').'/modules/'.$session->get('module').'/staff_manage_addProcess.php', 'post');
     
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form->addHiddenValue('address', $session->get('address'));
     $form->setFactory(DatabaseFormFactory::create($pdo));
 
 

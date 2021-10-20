@@ -25,14 +25,14 @@ use Gibbon\Forms\DatabaseFormFactory;
 
 
 //Module includes
-include './modules/'.$_SESSION[$guid]['module'].'/moduleFunctions.php';
+include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStudents_details.php') == false) {
 
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
-    $role = staffCASRole($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2);
+    $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) { $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
         $gibbonPersonID = $_GET['gibbonPersonID'];
@@ -41,11 +41,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
         } else {
             try {
                 if ($role == 'Coordinator') {
-                    $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'gibbonPersonID' => $gibbonPersonID);
-                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, image_240, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
+                    $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'gibbonPersonID' => $gibbonPersonID);
+                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, image_240, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonFormGroup.nameShort AS formGroup, gibbonFormGroup.gibbonFormGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonFormGroup ON (gibbonStudentEnrolment.gibbonFormGroupID=gibbonFormGroup.gibbonFormGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY formGroup, surname, preferredName";
                 } else {
-                    $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'advisor' => $_SESSION[$guid]['gibbonPersonID'], 'gibbonPersonID' => $gibbonPersonID);
-                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, image_240, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
+                    $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'advisor' => $session->get('gibbonPersonID'), 'gibbonPersonID' => $gibbonPersonID);
+                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, image_240, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonFormGroup.nameShort AS formGroup, gibbonFormGroup.gibbonFormGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonFormGroup ON (gibbonStudentEnrolment.gibbonFormGroupID=gibbonFormGroup.gibbonFormGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY formGroup, surname, preferredName";
                 }
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -74,10 +74,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 echo formatName('', $values['preferredName'], $values['surname'], 'Student', true, true);
                 echo '</td>';
                 echo "<td style='width: 34%; vertical-align: top'>";
-                echo "<span style='font-size: 115%; font-weight: bold'>Roll Group</span><br/>";
+                echo "<span style='font-size: 115%; font-weight: bold'>Form Group</span><br/>";
                 try {
-                    $dataDetail = array('gibbonRollGroupID' => $values['gibbonRollGroupID']);
-                    $sqlDetail = 'SELECT * FROM gibbonRollGroup WHERE gibbonRollGroupID=:gibbonRollGroupID';
+                    $dataDetail = array('gibbonFormGroupID' => $values['gibbonFormGroupID']);
+                    $sqlDetail = 'SELECT * FROM gibbonFormGroup WHERE gibbonFormGroupID=:gibbonFormGroupID';
                     $resultDetail = $connection2->prepare($sqlDetail);
                     $resultDetail->execute($dataDetail);
                 } catch (PDOException $e) {
@@ -92,15 +92,15 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 $casStatusSchool = $values['casStatusSchool'];
                 echo "<span style='font-size: 115%; font-weight: bold'>CAS Status</span><br/>";
                 if ($values['casStatusSchool'] == 'At Risk') {
-                    echo "<img title='At Risk' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconCross.png'/>";
+                    echo "<img title='At Risk' src='./themes/".$session->get('gibbonThemeName')."/img/iconCross.png'/>";
                 } elseif ($values['casStatusSchool'] == 'On Task') {
-                    echo "<img title='On Task' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick.png'/>";
+                    echo "<img title='On Task' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/>";
                 } elseif ($values['casStatusSchool'] == 'Excellence') {
-                    echo "<img title='Excellence' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/like_on_small.png'/>";
+                    echo "<img title='Excellence' src='./themes/".$session->get('gibbonThemeName')."/img/like_on_small.png'/>";
                 } elseif ($values['casStatusSchool'] == 'Incomplete') {
-                    echo "<img title='Incomplete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconCross.png'/> Incomplete";
+                    echo "<img title='Incomplete' src='./themes/".$session->get('gibbonThemeName')."/img/iconCross.png'/> Incomplete";
                 } elseif ($values['casStatusSchool'] == 'Complete') {
-                    echo "<img title='Complete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick.png'/> Complete";
+                    echo "<img title='Complete' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/> Complete";
                 }
                 echo '</td>';
                 echo '</tr>';
@@ -200,7 +200,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             }
 
                             if ($resultFeedback->rowCount() == 1) {
-                                echo "<img title='Supervisor Feedback Complete' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick.png'/>";
+                                echo "<img title='Supervisor Feedback Complete' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/>";
                             } else {
                                 try {
                                     $dataFeedback = array('ibDiplomaCASCommitmentID' => $values['ibDiplomaCASCommitmentID']);
@@ -212,12 +212,12 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                 }
 
                                 if ($resultFeedback->rowCount() > 0) {
-                                    echo "<img title='Supervisor Feedback Requested' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/iconTick_light.png'/>";
+                                    echo "<img title='Supervisor Feedback Requested' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick_light.png'/>";
                                 }
                             }
                             echo '</td>';
                             echo '<td>';
-                            echo "<a class='thickbox' href='".$_SESSION[$guid]['absoluteURL'].'/fullscreen.php?q=/modules/'.$_SESSION[$guid]['module']."/cas_adviseStudents_full.php&gibbonPersonID=$gibbonPersonID&ibDiplomaCASCommitmentID=".$values['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$_SESSION[$guid]['gibbonThemeName']."/img/page_right.png'/></a> ";
+                            echo "<a class='thickbox' href='".$session->get('absoluteURL').'/fullscreen.php?q=/modules/'.$session->get('module')."/cas_adviseStudents_full.php&gibbonPersonID=$gibbonPersonID&ibDiplomaCASCommitmentID=".$values['ibDiplomaCASCommitmentID']."&width=1000&height=550'><img title='View' src='./themes/".$session->get('gibbonThemeName')."/img/page_right.png'/></a> ";
                             echo '</td>';
                             echo '</tr>';
                         }
@@ -318,7 +318,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             echo '});';
                             echo '});';
                             echo '</script>';
-                            echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$_SESSION[$guid]['absoluteURL']."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
+                            echo "<a class='show_hide-$count' onclick='false'  href='#'><img style='padding-right: 5px' src='".$session->get('absoluteURL')."/themes/Default/img/page_down.png' alt='Show Comment' onclick='return false;' /></a>";
                             echo '</td>';
                             echo '</tr>';
                             echo "<tr class='comment-$count' id='comment-$count'>";
@@ -361,12 +361,12 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                     echo '</p>';
 
 
-                    $form = Form::create('casStatus', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/cas_adviseStudents_detailsStatusProcess.php', "post");
+                    $form = Form::create('casStatus', $session->get('absoluteURL').'/modules/'.$session->get('module').'/cas_adviseStudents_detailsStatusProcess.php', "post");
                     
                     $form->setFactory(DatabaseFormFactory::create($pdo));
                     
                      
-                    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                    $form->addHiddenValue('address', $session->get('address'));
                     $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
                      
                      $row = $form->addRow();
@@ -409,10 +409,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             echo '</div>';
                         } else {
                         
-                        $form = Form::create('interview1', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_adviseStudents_detailsInterview1Process.php");
+                        $form = Form::create('interview1', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview1Process.php");
                             
                             $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
-                            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                            $form->addHiddenValue('address', $session->get('address'));
                             
                             $form->addRow()->addHeading(__('Commitment Goals'));
                                 $formRow = $form->addRow();
@@ -451,7 +451,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             $form->addRow()->addHeading(__('General Information'));
                                 $row = $form->addRow();
                                     $row->addLabel('interviewer', __('Interviewer'));
-                                    $row->addTextField('interviewer')->setValue(formatName('', $_SESSION[$guid]['preferredName'], $_SESSION[$guid]['surname'], 'Staff', true, true))->readOnly()->isRequired();
+                                    $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('date', __('Date'));
                                     $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['1_date']))->isRequired();
@@ -485,10 +485,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             $valuesInterview = $resultInterview->fetch();
                             
                             
-                            $form = Form::create('interview2', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_adviseStudents_detailsInterview2Process.php");
+                            $form = Form::create('interview2', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview2Process.php");
                             
                             $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
-                            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                            $form->addHiddenValue('address', $session->get('address'));
                             
                             $form->addRow()->addHeading(__('Commitment Goals'));
                                 $formRow = $form->addRow();
@@ -573,7 +573,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             $form->addRow()->addHeading(__('General Information'));
                                 $row = $form->addRow();
                                     $row->addLabel('interviewer', __('Interviewer'));
-                                    $row->addTextField('interviewer')->setValue(formatName('', $_SESSION[$guid]['preferredName'], $_SESSION[$guid]['surname'], 'Staff', true, true))->readOnly()->isRequired();
+                                    $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('date', __('Date'));
                                     $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['2_date']))->isRequired();
@@ -609,10 +609,10 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             if (is_null($valuesInterview['2_date'])) {
                                 $page->addError(__('You have not yet completed Interview 2, and so cannot access Interview 3.'));
                             } else {
-                                $form = Form::create('interview3', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module']."/cas_adviseStudents_detailsInterview3Process.php");
+                                $form = Form::create('interview3', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview3Process.php");
                             
                                 $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
-                                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                                $form->addHiddenValue('address', $session->get('address'));
                             
                                 $form->addRow()->addHeading(__('Outcomes'));
                                     $formRow = $form->addRow();
@@ -702,7 +702,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                 $form->addRow()->addHeading(__('General Information'));
                                     $row = $form->addRow();
                                         $row->addLabel('interviewer', __('Interviewer'));
-                                        $row->addTextField('interviewer')->setValue(formatName('', $_SESSION[$guid]['preferredName'], $_SESSION[$guid]['surname'], 'Staff', true, true))->readOnly()->isRequired();
+                                        $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                     $row = $form->addRow();
                                         $row->addLabel('date', __('Date'));
                                         $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['3_date']))->isRequired();
@@ -724,46 +724,48 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 }
 
                 //Set sidebar
-                $_SESSION[$guid]['sidebarExtra'] = getUserPhoto($guid, $image_240, 240);
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra'].'<br>';
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra'].'<ul>';
+                $sidebarExtra = getUserPhoto($guid, $image_240, 240);
+                $sidebarExtra .= '<br>';
+                $sidebarExtra .= '<ul>';
                 $style = '';
                 if ($subpage == 'Overview') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Overview'>Overview</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Overview'>Overview</a></li>";
 
                 $style = '';
                 if ($subpage == 'Reflection') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Reflection'>Reflection</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Reflection'>Reflection</a></li>";
 
                 $style = '';
                 if ($subpage == 'CAS Status') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=CAS Status'>CAS Status</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=CAS Status'>CAS Status</a></li>";
 
                 $style = '';
                 if ($subpage == 'Interview 1') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 1'>Interview 1</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 1'>Interview 1</a></li>";
 
                 $style = '';
                 if ($subpage == 'Interview 2') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 2'>Interview 2</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 2'>Interview 2</a></li>";
 
                 $style = '';
                 if ($subpage == 'Interview 3') {
                     $style = "style='font-weight: bold'";
                 }
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra']."<li><a $style href='".$_SESSION[$guid]['absoluteURL'].'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 3'>Interview 3</a></li>";
+                $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 3'>Interview 3</a></li>";
 
-                $_SESSION[$guid]['sidebarExtra'] = $_SESSION[$guid]['sidebarExtra'].'</ul>';
+                $sidebarExtra .= '</ul>';
+                
+                $session->set('sidebarExtra', $sidebarExtra);
             }
         }
     }

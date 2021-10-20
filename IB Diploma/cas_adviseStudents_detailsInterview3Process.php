@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include '../../functions.php';
 include '../../config.php';
+require_once '../../gibbon.php';
 
 //Module includes
 include './moduleFunctions.php';
@@ -35,10 +36,10 @@ try {
 @session_start();
 
 //Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]['timezone']);
+date_default_timezone_set($session->get('timezone'));
 
 $gibbonPersonID = $_POST['gibbonPersonID'];
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_adviseStudents_details.php&gibbonPersonID=$gibbonPersonID&subpage=Interview 3";
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/'.getModuleName($_POST['address'])."/cas_adviseStudents_details.php&gibbonPersonID=$gibbonPersonID&subpage=Interview 3";
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStudents_details.php') == false) {
 
@@ -46,7 +47,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
     $URL = $URL.'&return=error0';
     header("Location: {$URL}");
 } else {
-    $role = staffCASRole($guid, $_SESSION[$guid]['gibbonPersonID'], $connection2);
+    $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) {
         //Fail 0
         $URL = $URL.'&return=error0';
@@ -60,11 +61,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
         } else {
             try {
                 if ($role == 'Coordinator') {
-                    $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'gibbonPersonID' => $gibbonPersonID);
-                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
+                    $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'gibbonPersonID' => $gibbonPersonID);
+                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonFormGroup.nameShort AS formGroup, gibbonFormGroup.gibbonFormGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonFormGroup ON (gibbonStudentEnrolment.gibbonFormGroupID=gibbonFormGroup.gibbonFormGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY formGroup, surname, preferredName";
                 } else {
-                    $data = array('gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'advisor' => $_SESSION[$guid]['gibbonPersonID'], 'gibbonPersonID' => $gibbonPersonID);
-                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonRollGroup.nameShort AS rollGroup, gibbonRollGroup.gibbonRollGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonRollGroup ON (gibbonStudentEnrolment.gibbonRollGroupID=gibbonRollGroup.gibbonRollGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY rollGroup, surname, preferredName";
+                    $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'), 'advisor' => $session->get('gibbonPersonID'), 'gibbonPersonID' => $gibbonPersonID);
+                    $sql = "SELECT gibbonPerson.gibbonPersonID, ibDiplomaStudentID, surname, preferredName, start.name AS start, end.name AS end, gibbonYearGroup.nameShort AS yearGroup, gibbonFormGroup.nameShort AS formGroup, gibbonFormGroup.gibbonFormGroupID, gibbonPersonIDCASAdvisor, casStatusSchool FROM ibDiplomaStudent JOIN gibbonPerson ON (ibDiplomaStudent.gibbonPersonID=gibbonPerson.gibbonPersonID) JOIN gibbonStudentEnrolment ON (ibDiplomaStudent.gibbonPersonID=gibbonStudentEnrolment.gibbonPersonID) LEFT JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) LEFT JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) LEFT JOIN gibbonYearGroup ON (gibbonStudentEnrolment.gibbonYearGroupID=gibbonYearGroup.gibbonYearGroupID) LEFT JOIN gibbonFormGroup ON (gibbonStudentEnrolment.gibbonFormGroupID=gibbonFormGroup.gibbonFormGroupID) WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonPerson.status='Full' AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd AND gibbonPersonIDCASAdvisor=:advisor AND gibbonPerson.gibbonPersonID=:gibbonPersonID ORDER BY formGroup, surname, preferredName";
                 }
                 $result = $connection2->prepare($sql);
                 $result->execute($data);
@@ -132,7 +133,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         $date = dateConvert($guid, $_POST['date']);
                         $notes = $_POST['notes'];
                         if (is_null($rowInterview['3_gibbonPersonIDInterviewer'])) {
-                            $gibbonPersonIDInterviewer = $_SESSION[$guid]['gibbonPersonID'];
+                            $gibbonPersonIDInterviewer = $session->get('gibbonPersonID');
                         } else {
                             $gibbonPersonIDInterviewer = $rowInterview['3_gibbonPersonIDInterviewer'];
                         }
@@ -144,7 +145,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         } else {
                             try {
                                 //If exists, update
-                                $data = array('notes' => $notes, 'date' => $date, 'gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID'], 'gibbonPersonID2' => $gibbonPersonID, 'outcome1' => $outcome[1], 'outcome2' => $outcome[2], 'outcome3' => $outcome[3], 'outcome4' => $outcome[4], 'outcome5' => $outcome[5], 'outcome6' => $outcome[6], 'outcome7' => $outcome[7], 'outcome8' => $outcome[8], 'outcomeNotes1' => $outcomeNotes[1], 'outcomeNotes2' => $outcomeNotes[2], 'outcomeNotes3' => $outcomeNotes[3], 'outcomeNotes4' => $outcomeNotes[4], 'outcomeNotes5' => $outcomeNotes[5], 'outcomeNotes6' => $outcomeNotes[6], 'outcomeNotes7' => $outcomeNotes[7], 'outcomeNotes8' => $outcomeNotes[8]);
+                                $data = array('notes' => $notes, 'date' => $date, 'gibbonPersonID' => $session->get('gibbonPersonID'), 'gibbonPersonID2' => $gibbonPersonID, 'outcome1' => $outcome[1], 'outcome2' => $outcome[2], 'outcome3' => $outcome[3], 'outcome4' => $outcome[4], 'outcome5' => $outcome[5], 'outcome6' => $outcome[6], 'outcome7' => $outcome[7], 'outcome8' => $outcome[8], 'outcomeNotes1' => $outcomeNotes[1], 'outcomeNotes2' => $outcomeNotes[2], 'outcomeNotes3' => $outcomeNotes[3], 'outcomeNotes4' => $outcomeNotes[4], 'outcomeNotes5' => $outcomeNotes[5], 'outcomeNotes6' => $outcomeNotes[6], 'outcomeNotes7' => $outcomeNotes[7], 'outcomeNotes8' => $outcomeNotes[8]);
                                 $sql = 'UPDATE ibDiplomaCASInterview SET 3_notes=:notes, 3_date=:date, 3_gibbonPersonIDInterviewer=:gibbonPersonID, 3_outcome1=:outcome1, 3_outcome2=:outcome2, 3_outcome3=:outcome3, 3_outcome4=:outcome4, 3_outcome5=:outcome5, 3_outcome6=:outcome6, 3_outcome7=:outcome7, 3_outcome8=:outcome8, 3_outcome1Notes=:outcomeNotes1, 3_outcome2Notes=:outcomeNotes2, 3_outcome3Notes=:outcomeNotes3, 3_outcome4Notes=:outcomeNotes4, 3_outcome5Notes=:outcomeNotes5, 3_outcome6Notes=:outcomeNotes6, 3_outcome7Notes=:outcomeNotes7, 3_outcome8Notes=:outcomeNotes8 WHERE gibbonPersonIDInterviewee=:gibbonPersonID2';
                                 $result = $connection2->prepare($sql);
                                 $result->execute($data);

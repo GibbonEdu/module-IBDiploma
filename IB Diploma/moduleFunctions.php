@@ -19,10 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function enroled($guid, $gibbonPersonID, $connection2)
 {
+    global $session;
     $output = false;
 
     try {
-        $data = array('gibbonPersonID' => $gibbonPersonID, 'sequenceStart' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber'], 'sequenceEnd' => $_SESSION[$guid]['gibbonSchoolYearSequenceNumber']);
+        $data = array('gibbonPersonID' => $gibbonPersonID, 'sequenceStart' => $session->get('gibbonSchoolYearSequenceNumber'), 'sequenceEnd' => $session->get('gibbonSchoolYearSequenceNumber'));
         $sql = 'SELECT ibDiplomaStudent.*, start.sequenceNumber AS start, end.sequenceNumber AS end FROM ibDiplomaStudent JOIN gibbonSchoolYear AS start ON (start.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDStart) JOIN gibbonSchoolYear AS end ON (end.gibbonSchoolYearID=ibDiplomaStudent.gibbonSchoolYearIDEnd) WHERE gibbonPersonID=:gibbonPersonID AND start.sequenceNumber<=:sequenceStart AND end.sequenceNumber>=:sequenceEnd';
         $result = $connection2->prepare($sql);
         $result->execute($data);
@@ -38,11 +39,12 @@ function enroled($guid, $gibbonPersonID, $connection2)
 
 function staffCASRole($guid,  $gibbonPersonID, $connection2)
 {
+    global $session;
     $output = false;
 
     try {
-        $data = array('gibbonPersonID' => $_SESSION[$guid]['gibbonPersonID']);
-        $sql = 'SELECT * FROM ibDiplomaCASStaff WHERE gibbonPersonID='.$_SESSION[$guid]['gibbonPersonID'];
+        $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
+        $sql = 'SELECT * FROM ibDiplomaCASStaff WHERE gibbonPersonID='.$session->get('gibbonPersonID');
         $result = $connection2->prepare($sql);
         $result->execute($data);
     } catch (PDOException $e) {
