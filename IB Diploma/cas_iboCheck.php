@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start();
+use Gibbon\Services\Format;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -75,7 +75,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck.ph
             //COLOR ROW BY STATUS!
             echo "<tr class=$rowNum>";
             echo '<td>';
-            echo formatName('', $row['preferredName'], $row['surname'], 'Student', true, true);
+            echo Format::name('', $row['preferredName'], $row['surname'], 'Student', true, true);
             echo '</td>';
             echo '<td>';
             echo $row['formGroup'];
@@ -95,7 +95,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck.ph
                 }
                 if ($resultAdvisor->rowCount() == 1) {
                     $rowAdvisor = $resultAdvisor->fetch();
-                    echo formatName('', $rowAdvisor['preferredName'], $rowAdvisor['surname'], 'Staff', true, true);
+                    echo Format::name('', $rowAdvisor['preferredName'], $rowAdvisor['surname'], 'Staff', true, true);
                 }
             }
             echo '</td>';

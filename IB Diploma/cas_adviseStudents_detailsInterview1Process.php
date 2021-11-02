@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Services\Format;
+
 include '../../functions.php';
 include '../../config.php';
 require_once '../../gibbon.php';
@@ -111,7 +113,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 }
 
                 //Get interview variables
-                $date = dateConvert($guid, $_POST['date']);
+                $date = Format::dateConvert($_POST['date']);
                 $notes = $_POST['notes'];
                 if ($date == '') {
                     //Fail1

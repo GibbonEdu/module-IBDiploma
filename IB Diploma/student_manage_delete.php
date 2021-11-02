@@ -32,9 +32,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
     $page->breadcrumbs
         ->add(__('Student Enrolment'), 'student_manage.php')
         ->add(__('Delete Student Enrolment'));
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
 
     //Check if school year specified
     $ibDiplomaStudentID = $_GET['ibDiplomaStudentID'];

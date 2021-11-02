@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 
 @session_start();
@@ -33,9 +34,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
     $page->breadcrumbs
         ->add(__('Student Enrolment'), 'student_manage.php')
         ->add(__('Edit Student Enrolment'));
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
 
     //Check if school year specified
     $ibDiplomaStudentID = $_GET['ibDiplomaStudentID'];
@@ -68,7 +66,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage_
             
             $row = $form->addRow();
                 $row->addLabel('Student',__('Student'));
-                $row->addTextField('gibbonPersonName')->readOnly()->setValue(formatName('', $values['preferredName'], $values['surname'], 'Student', true, true));
+                $row->addTextField('gibbonPersonName')->readOnly()->setValue(Format::name('', $values['preferredName'], $values['surname'], 'Student', true, true));
             
             $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'));
             $sql = "SELECT gibbonSchoolYearID as value,name FROM gibbonSchoolYear ORDER BY sequenceNumber";

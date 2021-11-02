@@ -33,12 +33,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/student_manage.
     $page->addError(__('You do not have access to this action.'));
 } else {
         $page->breadcrumbs
-        ->add(__('Manage Student Enrolment'));
-    
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-    
+        	->add(__('Manage Student Enrolment'));
             
         $CASStudentGateway = $container->get(CASStudentGateway::class);
         $userGateway = $container->get(UserGateway::class);

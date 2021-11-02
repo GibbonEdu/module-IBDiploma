@@ -36,10 +36,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
         $page->breadcrumbs
             ->add(__('Reflections'), 'cas_student_reflections.php')
             ->add(__('Delete Reflection'));
-            
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
 
         //Check if school year specified
         $ibDiplomaCASReflectionID = $_GET['ibDiplomaCASReflectionID'];

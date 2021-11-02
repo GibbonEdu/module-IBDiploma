@@ -33,9 +33,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_de
     $page->breadcrumbs
         ->add(__('Manage CAS Staff'), 'staff_manage.php')
         ->add(__('Delete CAS Staff'));
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
     
     //Check if school year specified
     $ibDiplomaCASStaffID = $_GET['ibDiplomaCASStaffID'];

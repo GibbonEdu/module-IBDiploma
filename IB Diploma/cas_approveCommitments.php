@@ -36,12 +36,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_approveComm
     $role = staffCASRole($guid, $session->get('gibbonPersonID'), $connection2);
     if ($role == false) { $page->addError(__('You are not enroled in the IB Diploma programme.'));
     } else {
-    
         $page->breadcrumbs->add(__('Approve CAS Commitments'));
-        
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
     }
     $gibbonSchoolYearID = $gibbon->session->get('gibbonSchoolYearID');
     $gibbonSchoolYearSequenceNumber = $gibbon->session->get('gibbonSchoolYearSequenceNumber');

@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Services\Format;
+
 include '../../functions.php';
 include '../../config.php';
 require_once '../../gibbon.php';
@@ -113,7 +115,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                     if ($casStatusSchool == '') {
                         $partialFail = true;
                     } else {
-                    
+
                         try {
                             $data = array('casStatusSchool' => $casStatusSchool, 'gibbonPersonID' => $gibbonPersonID);
                             $sql = 'UPDATE ibDiplomaStudent SET casStatusSchool=:casStatusSchool WHERE gibbonPersonID=:gibbonPersonID';
@@ -125,7 +127,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                     }
 
                     //Get interview variables
-                    $date = dateConvert($guid, $_POST['date']);
+                    $date = Format::dateConvert($_POST['date']);
                     $notes = $_POST['notes'];
                     if (is_null($rowInterview['2_gibbonPersonIDInterviewer'])) {
                         $gibbonPersonIDInterviewer = $session->get('gibbonPersonID');
@@ -144,7 +146,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             $sql = "UPDATE ibDiplomaCASInterview SET 2_notes=:notes, 2_date=:date, 2_gibbonPersonIDInterviewer=:gibbonPersonID, 2_outcome1=:outcome1, 2_outcome2=:outcome2, 2_outcome3=:outcome3, 2_outcome4=:outcome4, 2_outcome5=:outcome5, 2_outcome6=:outcome6, 2_outcome7=:outcome7, 2_outcome8=:outcome8 WHERE gibbonPersonIDInterviewee=$gibbonPersonID";
                             $result = $connection2->prepare($sql);
                             $result->execute($data);
-                           
+
                         } catch (PDOException $e) {
                             //Fail 2
                             $URL = $URL.'&return=error2';

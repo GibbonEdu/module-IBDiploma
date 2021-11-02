@@ -41,10 +41,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_int
         echo 'This page allows you to pre-enter information about your outcomes prior to Interview 2. For each of the 8 outcomes below, indicate which commitments you think <b>might</b> satisfy that outcome.';
         echo '</p>';
 
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
-
         try {
             $dataInterview = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sqlInterview = 'SELECT ibDiplomaCASInterview.*, surname, preferredName FROM ibDiplomaCASInterview JOIN gibbonPerson ON (ibDiplomaCASInterview.1_gibbonPersonIDInterviewer=gibbonPerson.gibbonPersonID) WHERE gibbonPersonIDInterviewee=:gibbonPersonID';

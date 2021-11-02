@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start();
+use Gibbon\Services\Format;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -88,7 +88,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_fu
                         while ($valuesReflections = $resultReflections->fetch()) {
                             echo '<h3>';
                             echo $valuesReflections['title'].'<br/>';
-                            echo "<span style='font-size: 55%; font-weight: normal; font-style: italic; margin-top: 5px'>".dateConvertBack(substr($valuesReflections['timestamp'], 0, 10)).' at '.substr($valuesReflections['timestamp'], 11, 5).'</span>';
+                            echo "<span style='font-size: 55%; font-weight: normal; font-style: italic; margin-top: 5px'>".Format::date(substr($valuesReflections['timestamp'], 0, 10)).' at '.substr($valuesReflections['timestamp'], 11, 5).'</span>';
                             echo '</h3>';
                             echo '<p>';
                             echo $valuesReflections['reflection'];
@@ -118,11 +118,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_fu
                     echo '</td>';
                     echo "<td style='width: 33%; vertical-align: top'>";
                     echo "<span style='font-size: 115%; font-weight: bold'>Start Date</span><br/>";
-                    echo dateConvertBack($values['dateStart']);
+                    echo Format::date($values['dateStart']);
                     echo '</td>';
                     echo "<td style='width: 33%; vertical-align: top'>";
                     echo "<span style='font-size: 115%; font-weight: bold'>End Date</span><br/>";
-                    echo dateConvertBack($values['dateEnd']);
+                    echo Format::date($values['dateEnd']);
                     echo '</td>';
                     echo '</tr>';
                     if ($values['description'] != '') {

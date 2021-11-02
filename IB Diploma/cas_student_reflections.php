@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start();
+use Gibbon\Services\Format;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -32,10 +32,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
     } else {
         $page->breadcrumbs
             ->add(__('Reflections'));
-            
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
 
         try {
             $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
@@ -119,7 +115,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                 }
                 echo '</td>';
                 echo '<td>';
-                echo dateConvertBack($guid, substr($row['timestamp'], 0, 10));
+                echo Format::date(substr($row['timestamp'], 0, 10));
                 echo '</td>';
                 echo '<td>';
                 echo $row['title'];

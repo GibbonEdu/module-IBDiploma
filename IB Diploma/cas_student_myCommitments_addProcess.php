@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Services\Format;
+
 include '../../functions.php';
 include '../../config.php';
 require_once '../../gibbon.php';
@@ -53,11 +55,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         //Proceed!
         $name = $_POST['name'];
         $status = $_POST['status'];
-        $dateStart = dateConvert($guid, $_POST['dateStart']);
+        $dateStart = Format::dateConvert($_POST['dateStart']);
         if ($_POST['dateEnd'] == '') {
             $dateEnd = null;
         } else {
-            $dateEnd = dateConvert($guid, $_POST['dateEnd']);
+            $dateEnd = Format::dateConvert($_POST['dateEnd']);
         }
 
         $supervisorName = $_POST['supervisorName'];

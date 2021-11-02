@@ -17,9 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start();
 use Gibbon\Forms\Form;
-
+use Gibbon\Domain\System\SettingGateway;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -35,9 +34,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
         $page->breadcrumbs
             ->add(__('Reflections'), 'cas_student_reflections.php')
             ->add(__('Add Reflection'));
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
 
         $step = null;
         if (isset($_GET['step'])) {
@@ -126,7 +122,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_ref
                     $row->addTextField('title')->setValue()->isRequired();
 
 
-                $editor = getSettingByScope($connection2, 'reflection', '', 20, false, true);
+                $editor = $container->get(SettingGateway::class)->getSettingByScope('reflection', '', 20, false, true);
                 $row = $form->addRow();
                 $column = $row->addColumn();
                 if ($type == 'Commitment Reflection') {

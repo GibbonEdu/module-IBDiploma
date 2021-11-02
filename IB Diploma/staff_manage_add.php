@@ -35,14 +35,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ad
         ->add(__('Add CAS Staff'));
         
     $returns = array();
-    $returns['error4'] = __('Add failed because the selected person is already registered.');
     $editLink = '';
     if (isset($_GET['editID'])) {
         $editLink = $session->get('absoluteURL').'/index.php?q=/modules/IB Diploma/staff_manage_edit.php&ibDiplomaCASStaffID='.$_GET['editID'];
     }
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], $editLink, $returns);
-    }
+    $page->return->setEditLink($editLink);
 
     try{
     $data = array();

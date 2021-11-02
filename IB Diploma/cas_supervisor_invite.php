@@ -37,10 +37,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_supervisor_
 
         $page->breadcrumbs
             ->add(__('Invite CAS Supervisor Feedback'));
-            
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
 
         $step = null;
         if (isset($_GET['step'])) {

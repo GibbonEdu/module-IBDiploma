@@ -37,10 +37,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         $page->breadcrumbs
             ->add(__('My Commitments'), 'cas_student_myCommitments.php')
             ->add(__('Delete Commitment'));
-            
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
 
         //Check if school year specified
         $ibDiplomaCASCommitmentID = $_GET['ibDiplomaCASCommitmentID'];

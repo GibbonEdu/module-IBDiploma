@@ -18,17 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 
 @session_start();
-
-
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStudents_details.php') == false) {
-
     //Acess denied
     $page->addError(__('You do not have access to this action.'));
 } else {
@@ -62,16 +60,12 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 $page->breadcrumbs
                     ->add(__('Advise CAS Students'), 'cas_adviseStudents.php')
                     ->add(__('Advise Student'));
-                    
-                if (isset($_GET['return'])) {
-                    returnProcess($guid, $_GET['return'], null, null);
-                }
 
                 echo "<table class='smallIntBorder' cellspacing='0' style='width: 100%'>";
                 echo '<tr>';
                 echo "<td style='width: 34%; vertical-align: top'>";
                 echo "<span style='font-size: 115%; font-weight: bold'>Name</span><br/>";
-                echo formatName('', $values['preferredName'], $values['surname'], 'Student', true, true);
+                echo Format::name('', $values['preferredName'], $values['surname'], 'Student', true, true);
                 echo '</td>';
                 echo "<td style='width: 34%; vertical-align: top'>";
                 echo "<span style='font-size: 115%; font-weight: bold'>Form Group</span><br/>";
@@ -96,7 +90,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 } elseif ($values['casStatusSchool'] == 'On Task') {
                     echo "<img title='On Task' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/>";
                 } elseif ($values['casStatusSchool'] == 'Excellence') {
-                    echo "<img title='Excellence' src='./themes/".$session->get('gibbonThemeName')."/img/like_on_small.png'/>";
+                    echo "<img title='Excellence' src='./themes/".$session->get('gibbonThemeName')."/img/iconTick.png'/>";
                 } elseif ($values['casStatusSchool'] == 'Incomplete') {
                     echo "<img title='Incomplete' src='./themes/".$session->get('gibbonThemeName')."/img/iconCross.png'/> Incomplete";
                 } elseif ($values['casStatusSchool'] == 'Complete') {
@@ -158,7 +152,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         $intended = array();
                         $complete = array();
                         while ($values = $result->fetch()) {
-                            
+
                                 //COLOR ROW BY STATUS!
                                 echo "<tr>";
                             echo '<td>';
@@ -303,7 +297,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             }
                             echo '</td>';
                             echo '<td>';
-                            echo dateConvertBack($guid, substr($values['timestamp'], 0, 10));
+                            echo Format::date(substr($values['timestamp'], 0, 10));
                             echo '</td>';
                             echo '<td>';
                             echo $values['title'];
@@ -362,21 +356,21 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
 
 
                     $form = Form::create('casStatus', $session->get('absoluteURL').'/modules/'.$session->get('module').'/cas_adviseStudents_detailsStatusProcess.php', "post");
-                    
+
                     $form->setFactory(DatabaseFormFactory::create($pdo));
-                    
-                     
+
+
                     $form->addHiddenValue('address', $session->get('address'));
                     $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
-                     
+
                      $row = $form->addRow();
                          $row->addHeading(__('Status *'));
                          $row->addSelect('casStatusSchool')->fromArray(array('' => __(''), 'At Risk' => __('At Risk'), 'On Task' => __('On Task'), 'Excellence' => __('Execellence'), 'Complete' => ('Complete'), 'Incomplete' => ('Incomplete')))->selected($casStatusSchool)->isRequired();
-                     
+
                     $row = $form->addRow();
                         $row->addFooter();
                         $row->addSubmit();
-                        
+
                     echo $form->getOutput();
 
                 } elseif ($subpage == 'Interview 1') {
@@ -395,7 +389,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         if ($resultInterview->rowCount() == 1) {
                             $valuesInterview = $resultInterview->fetch();
                         }
-                    try {
+                        try {
                             $dataCommitments = array('gibbonPersonID' => $gibbonPersonID);
                             $sqlCommitments = "SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved' ORDER BY name";
                             $resultCommitments = $connection2->prepare($sqlCommitments);
@@ -403,27 +397,28 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                         } catch (PDOException $e) {
                             $page->addError($e->getMessage());
                         }
-                    if ($resultCommitments->rowCount() < 1) {
+
+                        if ($resultCommitments->rowCount() < 1) {
                             echo "<div class='error'>";
                             echo 'There are no commitments to display.';
                             echo '</div>';
                         } else {
-                        
+
                         $form = Form::create('interview1', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview1Process.php");
-                            
+
                             $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
                             $form->addHiddenValue('address', $session->get('address'));
-                            
+
                             $form->addRow()->addHeading(__('Commitment Goals'));
                                 $formRow = $form->addRow();
                                 $formRow->addLabel('label', __('Work with the interviewee to determine a suitable, brief goal for each approved commitment.'));
-                            
+
                             $table = $form->addRow()->addTable()->setClass('mini fullWidth');
                                 $row = $table->addHeaderRow();
                                     $row->addContent(__('Commitment'))->wrap('<div style="width: 120px;">', '</div>');
                                     $row->addContent(__('Timing'))->wrap('<div style="width: 300px;">', '</div>');
                                     $row->addContent(__('Goals'))->wrap('<div style="width: 120px;">', '</div>');
-                            
+
                             $count = 0;
                             while ($valuesCommitments = $resultCommitments->fetch()) {
                                 ++$count;
@@ -441,24 +436,24 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                     $form->addHiddenValue($count.'-ibDiplomaCASCommitmentID', $valuesCommitments['ibDiplomaCASCommitmentID']);
                                     $row->addTextField($count.'-goals')->setValue($valuesCommitments['goals'])->maxLength(255);
                             }
-                        
+
                             $form->addRow()->addHeading(__('Notes'));
                                 $row = $form->addRow();
                                     $column = $row->addColumn();
                                         $column->addContent( __('Use this space to take notes on your conversation with the student. You may wish to consider:<i><ul><li>Is there a balance across commitments?</li><li>Are commitments genuine and meaningful?</li><li>Do commitments require student to show persistence and commitment?</li></ul></i>'));
                                         $column->addTextArea('notes')->setRows(15)->setValue($valuesInterview['1_notes'])->setClass('fullWidth');
-                        
+
                             $form->addRow()->addHeading(__('General Information'));
                                 $row = $form->addRow();
                                     $row->addLabel('interviewer', __('Interviewer'));
-                                    $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
+                                    $row->addTextField('interviewer')->setValue(Format::name('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('date', __('Date'));
-                                    $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['1_date']))->isRequired();
+                                    $row->addDate('date')->setValue(Format::date($valuesInterview['1_date']))->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('casStatusSchool', __('CAS Status'));
                                     $row->addSelect('casStatusSchool')->fromArray(array('At Risk' =>__('At Risk'), 'On Task' => __('On Task'), 'Excellence' =>__('Excellence')))->selected($casStatusSchool)->isRequired();
-                        
+
                             $form->addHiddenValue("count", $count);
                             $row = $form->addRow();
                                 $row->addFooter();
@@ -483,17 +478,17 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                             $page->addError(__('You have not yet completed Interview 1, and so cannot access Interview 2.'));
                         } else {
                             $valuesInterview = $resultInterview->fetch();
-                            
-                            
+
+
                             $form = Form::create('interview2', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview2Process.php");
-                            
+
                             $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
                             $form->addHiddenValue('address', $session->get('address'));
-                            
+
                             $form->addRow()->addHeading(__('Commitment Goals'));
                                 $formRow = $form->addRow();
                                 $formRow->addContent( __('Work with the interviewee to determine which commitments you think <b>might</b> satisfy each of the outcomes listed below. The student should have pre-filled this information before Interview 2.'));
-                            
+
                             try {
                                 $dataList = array('gibbonPersonID' => $gibbonPersonID);
                                 $sqlList = "SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved' ORDER BY name";
@@ -535,7 +530,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                         $title = "<span style='font-weight: bold' title='As with new challenges, new skills may be shown in activities that the student has not previously undertaken, or in increased expertise in an established area.'>Developed new skills</span>";
                                         break;
                                 }
-                                
+
                                 $prepopulate = '';
                                 if ($valuesInterview["2_outcome".$i] != '') {
                                     $outcomeList = array();
@@ -551,7 +546,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                         $prepopulate = $pdo->select($sqlPrepopulate, $dataPrepopulate)->fetchKeyPair();
                                     }
                                 }
-                                
+
                                     $data = array('gibbonPersonID' => $gibbonPersonID);
                                     $sql = "SELECT name as name, ibDiplomaCASCommitmentID as value FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved'";
                                     $row = $form->addRow()->addClass('tags');
@@ -569,23 +564,23 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                     $column = $row->addColumn();
                                         $column->addContent( __('Use this space to take notes on your conversation with the student. You may wish to consider:<i><ul><li>How is student progressing?</li><li>Are all outcomes begun?</li><li>Which outcomes require more thought and action?</li></ul></i>'));
                                         $column->addTextArea('notes')->setRows(15)->setValue($valuesInterview['2_notes'])->setClass('fullWidth');
-                        
+
                             $form->addRow()->addHeading(__('General Information'));
                                 $row = $form->addRow();
                                     $row->addLabel('interviewer', __('Interviewer'));
-                                    $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
+                                    $row->addTextField('interviewer')->setValue(Format::name('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('date', __('Date'));
-                                    $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['2_date']))->isRequired();
+                                    $row->addDate('date')->setValue(Format::date($valuesInterview['2_date']))->isRequired();
                                 $row = $form->addRow();
                                     $row->addLabel('casStatusSchool', __('CAS Status'));
                                     $row->addSelect('casStatusSchool')->fromArray(array('At Risk' =>__('At Risk'), 'On Task' => __('On Task'), 'Excellence' =>__('Excellence')))->selected($casStatusSchool)->isRequired();
-                        
-                            
+
+
                             $row = $form->addRow();
                                 $row->addFooter();
                                 $row->addSubmit();
-                            echo $form->getOutput();                        
+                            echo $form->getOutput();
                         }
                     }
                 } elseif ($subpage == 'Interview 3') {
@@ -610,14 +605,14 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                 $page->addError(__('You have not yet completed Interview 2, and so cannot access Interview 3.'));
                             } else {
                                 $form = Form::create('interview3', $session->get('absoluteURL').'/modules/'.$session->get('module')."/cas_adviseStudents_detailsInterview3Process.php");
-                            
+
                                 $form->addHiddenValue('gibbonPersonID', $gibbonPersonID);
                                 $form->addHiddenValue('address', $session->get('address'));
-                            
+
                                 $form->addRow()->addHeading(__('Outcomes'));
                                     $formRow = $form->addRow();
                                     $formRow->addContent( __('Work with the interviewee to determine which commitments you think <b>have</b> satisfied each of the outcomes listed below. The student should have pre-filled this information before Interview 3. Use the second box for each outcome to record notes from your discussion'));
-                            
+
                                 try {
                                     $dataList = array('gibbonPersonID' => $gibbonPersonID);
                                     $sqlList = "SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved' ORDER BY name";
@@ -659,7 +654,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                             $title = "<span style='font-weight: bold' title='As with new challenges, new skills may be shown in activities that the student has not previously undertaken, or in increased expertise in an established area.'>Developed new skills</span>";
                                             break;
                                     }
-                                
+
                                     $prepopulate = '';
                                     if ($valuesInterview["3_outcome".$i] != '') {
                                         echo "3_outcome".$i;
@@ -676,7 +671,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                             $prepopulate = $pdo->select($sqlPrepopulate, $dataPrepopulate)->fetchKeyPair();
                                         }
                                     }
-                                
+
                                         $data = array('gibbonPersonID' => $gibbonPersonID);
                                         $sql = "SELECT name as name, ibDiplomaCASCommitmentID as value FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID AND approval='Approved'";
                                         $row = $form->addRow()->addClass('tags');
@@ -698,25 +693,25 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                                         $column = $row->addColumn();
                                             $column->addContent( __('Use this space to take notes on your conversation with the student. You may wish to consider:<i><ul style="margin-bottom: 0px"><li>Are all outcomes satisfactorily completed?</li></ul></i><br/>'));
                                             $column->addTextArea('notes')->setRows(15)->setValue($valuesInterview['3_notes'])->setClass('fullWidth');
-                        
+
                                 $form->addRow()->addHeading(__('General Information'));
                                     $row = $form->addRow();
                                         $row->addLabel('interviewer', __('Interviewer'));
-                                        $row->addTextField('interviewer')->setValue(formatName('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
+                                        $row->addTextField('interviewer')->setValue(Format::name('', $session->get('preferredName'), $session->get('surname'), 'Staff', true, true))->readOnly()->isRequired();
                                     $row = $form->addRow();
                                         $row->addLabel('date', __('Date'));
-                                        $row->addDate('date')->setValue(dateConvertBack($guid, $valuesInterview['3_date']))->isRequired();
+                                        $row->addDate('date')->setValue(Format::date($valuesInterview['3_date']))->isRequired();
                                     $row = $form->addRow();
                                         $row->addLabel('casStatusSchool', __('CAS Status'));
                                         $row->addSelect('casStatusSchool')->fromArray(array('Complete' =>__('Complete'), 'Incomplete' => __('Incomplete')))->selected($casStatusSchool)->isRequired();
-                        
-                            
+
+
                                 $row = $form->addRow();
                                     $row->addFooter();
                                     $row->addSubmit();
                                 echo $form->getOutput();
-                                
-                            
+
+
 
                             }
                         }
@@ -724,7 +719,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 }
 
                 //Set sidebar
-                $sidebarExtra = getUserPhoto($guid, $image_240, 240);
+                $sidebarExtra = Format::userPhoto($image_240, 240);
                 $sidebarExtra .= '<br>';
                 $sidebarExtra .= '<ul>';
                 $style = '';
@@ -764,7 +759,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_adviseStude
                 $sidebarExtra .= "<li><a $style href='".$session->get('absoluteURL').'/index.php?q='.$_GET['q']."&gibbonPersonID=$gibbonPersonID&subpage=Interview 3'>Interview 3</a></li>";
 
                 $sidebarExtra .= '</ul>';
-                
+
                 $session->set('sidebarExtra', $sidebarExtra);
             }
         }

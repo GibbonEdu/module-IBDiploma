@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v1.1.05
+-------
+Removed deprecated function calls
+
 v1.1.04
 -------
 Final session refactoring

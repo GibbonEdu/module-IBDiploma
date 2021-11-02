@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
 
 @session_start();
@@ -34,9 +35,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ed
     $page->breadcrumbs
         ->add(__('Manage CAS Staff'), 'staff_manage.php')
         ->add(__('Edit CAS Staff'));
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
 
     //Check if school year specified
     $ibDiplomaCASStaffID = $_GET['ibDiplomaCASStaffID'];
@@ -71,7 +69,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage_ed
             
             $row = $form->addRow();
                 $row->addLabel('Staff',__('Staff'));
-                $row->addTextField('gibbonPersonName')->readOnly()->setValue(formatName('', $values['preferredName'], $values['surname'], 'Staff', true, true));
+                $row->addTextField('gibbonPersonName')->readOnly()->setValue(Format::name('', $values['preferredName'], $values['surname'], 'Staff', true, true));
                  
             $row = $form->addRow();
                 $row->addLabel('role',__('Role'));

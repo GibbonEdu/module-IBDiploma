@@ -34,9 +34,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/staff_manage.ph
 } else {
     $page->breadcrumbs
         ->add(__('Manage CAS Staff'));
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
+
     $CASStaffGateway = $container->get(CASStaffGateway::class);
     $criteria = $CASStaffGateway->newQueryCriteria()->fromPOST();
     $staff = $CASStaffGateway->queryCASStaff($criteria);

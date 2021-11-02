@@ -18,9 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 use Gibbon\Forms\DatabaseFormFactory;
-
-@session_start();
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -37,14 +36,11 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
             ->add(__('My Commitments'), 'cas_student_myCommitments.php')
             ->add(__('Add Commitment'));
             
-        $returns = array();
         $editLink = '';
         if (isset($_GET['editID'])) {
             $editLink = $session->get('absoluteURL').'/index.php?q=/modules/IB Diploma/cas_student_myCommitments_edit.php&ibDiplomaCASCommitmentID='.$_GET['editID'];
         }
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], $editLink, $returns);
-        }
+        $page->return->setEditLink($editLink);
 
         $step = null;
         if (isset($_GET['step'])) {
@@ -157,7 +153,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                                 $row->addDate('dateStart')->isRequired();
                             }
                             else {
-                                $row->addDate('dateStart')->setValue(dateConvertBack($guid, $rowActivity['programStart']))->isRequired();
+                                $row->addDate('dateStart')->setValue(Format::date($rowActivity['programStart']))->isRequired();
                             }
                             
                             
@@ -167,7 +163,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                                 $row->addDate('dateEnd');
                             }
                             else {
-                                $row->addDate('dateEnd')->setValue(dateConvertBack($guid, $rowActivity['programEnd']));
+                                $row->addDate('dateEnd')->setValue(Format::date($rowActivity['programEnd']));
                             }
                             
 
@@ -191,7 +187,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
                                     $row->addTextField('supervisorName')->maxLength(30)->isRequired();
                                 }
                                 else {
-                                    $row->addTextField('supervisorName')->setValue(formatName('', $rowCoord['preferredName'], $rowCoord['surname'], 'Staff', true, true))->maxLength(30)->isRequired();
+                                    $row->addTextField('supervisorName')->setValue(Format::name('', $rowCoord['preferredName'], $rowCoord['surname'], 'Staff', true, true))->maxLength(30)->isRequired();
                                 }
                             
                         

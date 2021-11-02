@@ -34,10 +34,6 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_student_myC
         $page->breadcrumbs
             ->add(__('My Commitments'));
 
-        if (isset($_GET['return'])) {
-            returnProcess($guid, $_GET['return'], null, null);
-        }
-
         try {
             $data = array('gibbonPersonID' => $session->get('gibbonPersonID'));
             $sql = 'SELECT * FROM ibDiplomaCASCommitment WHERE gibbonPersonID=:gibbonPersonID ORDER BY approval, name';

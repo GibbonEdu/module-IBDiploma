@@ -18,8 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
-
-@session_start();
+use Gibbon\Services\Format;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -42,10 +41,6 @@ if ($resultKey->rowCount() < 1) {
 } else {
     $page->breadcrumbs
         ->add(__('CAS Supervisor Feedback Form'));
-        
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
 
     if ($updateReturn != 'success0') {
         $rowKey = $resultKey->fetch();
@@ -68,7 +63,7 @@ if ($resultKey->rowCount() < 1) {
             echo '<tr>';
             echo "<td style='width: 34%; vertical-align: top'>";
             echo "<span style='font-size: 115%; font-weight: bold'>Student</span><br/>";
-            echo formatName('', $rowKey['preferredName'], $rowKey['surname'], 'Student', false, true);
+            echo Format::name('', $rowKey['preferredName'], $rowKey['surname'], 'Student', false, true);
             echo '</td>';
             echo "<td style='width: 34%; vertical-align: top'>";
             echo "<span style='font-size: 115%; font-weight: bold'>Commitment</span><br/>";

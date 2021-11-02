@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start();
+use Gibbon\Services\Format;
 
 //Module includes
 include './modules/'.$session->get('module').'/moduleFunctions.php';
@@ -94,7 +94,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
             echo '<tr>';
             echo "<td style='width: 34%; vertical-align: top'>";
             echo "<span style='font-size: 115%; font-weight: bold'>Name</span><br/>";
-            echo formatName('', $values['preferredName'], $values['surname'], 'Student', true, true);
+            echo Format::name('', $values['preferredName'], $values['surname'], 'Student', true, true);
             echo '</td>';
             echo "<td style='width: 33%; vertical-align: top'>";
             echo "<span style='font-size: 115%; font-weight: bold'>Year Group</span><br/>";
@@ -335,7 +335,7 @@ if (isActionAccessible($guid, $connection2, '/modules/IB Diploma/cas_iboCheck_de
                         }
                         echo '</td>';
                         echo '<td>';
-                        echo dateConvertBack(substr($values['timestamp'], 0, 10));
+                        echo Format::date(substr($values['timestamp'], 0, 10));
                         echo '</td>';
                         echo '<td>';
                         echo $values['title'];
